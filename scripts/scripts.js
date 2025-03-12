@@ -8,17 +8,26 @@ const displayCategoryVideos = (id) => {
   const url = `https://openapi.programming-hero.com/api/phero-tube/category/${id}`;
   fetch(url)
   .then((res) => res.json())
-  .then((data) => displayVideos(data.category))
+  .then((data) => {
+    const selectedButton = document.querySelectorAll('#category-container button');
+    for(const button of selectedButton){
+      button.classList.remove('bg-red-500', 'text-white')
+    }
+    const clickedButton = document.getElementById(`button-${id}`);
+    clickedButton.classList.add('bg-red-500', 'text-white')
+    displayVideos(data.category);
+  })
 }
 
 const displayDataButton = (categories) => {
   const categoryContainer = document.getElementById("category-container");
   for (const categoryName of categories) {
-    const { category } = categoryName;
+    const { category, category_id } = categoryName;
     const categoryButton = document.createElement("button");
     categoryButton.addEventListener('click', function(){
       displayCategoryVideos(categoryName.category_id)
     })
+    categoryButton.setAttribute('id', `button-${category_id}`)
     categoryButton.classList.add("btn", "btn-sm");
     categoryButton.innerText = category;
     categoryContainer.appendChild(categoryButton);
@@ -45,9 +54,7 @@ const displayVideos = (videosData) => {
   }
 
   videosData.forEach(video => {
-    console.log(video);
     const {thumbnail, title, authors, others} = video;
-    console.log(others);
     const videoCard = document.createElement('div');
     videoCard.innerHTML = `
         <div class="card bg-base-100">
